@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Valentine 💖</title>
+
+<style>
+:root{
+  --rose:#ffd1dc;
+  --rose-dark:#e75480;
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  height:100vh;
+  background:linear-gradient(#ffe4ef,var(--rose));
+  font-family:-apple-system,BlinkMacSystemFont,"Comic Sans MS",cursive;
+  text-align:center;
+  overflow:hidden;
+  padding-top:env(safe-area-inset-top);
+}
+
+/* COEURS */
+.heart{
+  position:fixed;
+  top:-10px;
+  font-size:22px;
+  animation:fall linear infinite;
+}
+@keyframes fall{to{transform:translateY(110vh)}}
+
+/* TITRE */
+#title{
+  font-size:clamp(26px,7vw,42px);
+  margin:20px;
+  color:var(--rose-dark);
+}
+
+/* ENVELOPPE 3D */
+#envelope{
+  width:280px;
+  height:180px;
+  margin:30px auto;
+  position:relative;
+  perspective:1200px;
+  cursor:pointer;
+}
+
+/* PAPIER */
+.env-body{
+  position:absolute;
+  width:100%;
+  height:100%;
+  background:
+    repeating-linear-gradient(
+      45deg,
+      #fff,
+      #fff 10px,
+      #f9f9f9 10px,
+      #f9f9f9 20px
+    );
+  border-radius:12px;
+  box-shadow:0 25px 40px rgba(0,0,0,.25);
+  overflow:hidden;
+}
+
+/* RABAT */
+.env-flap{
+  position:absolute;
+  width:100%;
+  height:100%;
+  background:#ffb6c1;
+  clip-path:polygon(0 0,50% 60%,100% 0);
+  transform-origin:top;
+  transition:transform 1.2s ease;
+  z-index:4;
+}
+
+/* CACHEt DE CIRE */
+#wax{
+  position:absolute;
+  width:55px;
+  height:55px;
+  background:radial-gradient(circle at top left,#ff6b8a,#b3003b);
+  border-radius:50%;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  z-index:5;
+  box-shadow:0 4px 10px rgba(0,0,0,.4);
+  transition:transform .6s,opacity .6s;
+}
+#wax::after{
+  content:"❤";
+  color:#fff;
+  font-size:22px;
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+}
+
+#envelope.open .env-flap{
+  transform:rotateX(-170deg);
+}
+#envelope.open #wax{
+  transform:scale(2);
+  opacity:0;
+}
+
+/* LETTRE QUI SORT */
+#letter{
+  display:none;
+  background:#fff;
+  margin:0 15px;
+  padding:15px;
+  border-radius:14px;
+  max-height:55vh;
+  overflow-y:auto;
+  animation:letterOut 1.2s ease forwards;
+}
+@keyframes letterOut{
+  from{transform:translateY(80px);opacity:0}
+  to{transform:translateY(0);opacity:1}
+}
+
+#timer{font-size:18px;margin-top:10px}
+
+/* CONFETTI */
+.confetti{
+  position:fixed;
+  font-size:20px;
+  animation:pop 1s forwards;
+}
+@keyframes pop{
+  to{transform:translateY(200px) rotate(360deg);opacity:0}
+}
+
+/* QUESTION */
+#question{
+  display:none;
+  font-size:clamp(22px,6vw,34px);
+}
+button{
+  font-size:18px;
+  padding:10px 18px;
+  margin:10px;
+  border:none;
+  border-radius:20px;
+}
+#yes{background:#ff4f8b;color:#fff}
+#no{background:#ddd}
+
+/* PLEURS */
+.cry{
+  position:fixed;
+  font-size:28px;
+  animation:fall 1.4s linear;
+}
+.bigYes{font-size:60px!important}
+</style>
+</head>
+
+<body>
+
+<h1 id="title"></h1>
+
+<div id="envelope">
+  <div class="env-body"></div>
+  <div class="env-flap"></div>
+  <div id="wax"></div>
+</div>
+
+<div id="letter">
+  <p id="text"></p>
+  <div id="timer">⏳ 60</div>
+</div>
+
+<div id="question">
+  Veux-tu être ma Valentine ? 💖<br>
+  <button id="yes">OUI</button>
+  <button id="no">NON</button>
+</div>
+
+<audio id="music" loop>
+  <source src="https://cdn.pixabay.com/audio/2023/02/14/audio_38b5f5bb57.mp3">
+</audio>
+
+<script>
+/* COEURS */
+setInterval(()=>{
+  const h=document.createElement("div");
+  h.className="heart";
+  h.innerText="💖";
+  h.style.left=Math.random()*100+"vw";
+  h.style.animationDuration=(3+Math.random()*3)+"s";
+  document.body.appendChild(h);
+  setTimeout(()=>h.remove(),6000);
+},300);
+
+/* TITRE */
+const titleText="Tracya oui toi princesse";
+let i=0;(function anim(){
+  if(i<titleText.length){
+    title.innerHTML+=titleText[i++];
+    setTimeout(anim,120);
+  }
+})();
+
+/* ENVELOPPE */
+envelope.onclick=()=>{
+  envelope.classList.add("open");
+  music.play();
+  if(navigator.vibrate) navigator.vibrate(50); // haptic
+  setTimeout(()=>{
+    envelope.style.display="none";
+    letter.style.display="block";
+    writeText();
+    startTimer();
+  },1100);
+};
+
+/* TEXTE */
+const message=`Je voulais prendre un instant pour te remercier d’être celle que tu es.
+Ta présence illumine mes journées et transforme les moments simples en souvenirs précieux.
+Je me sens vraiment privilégié de partager ma vie avec toi.
+Sache que je t’aime énormément et que je serai toujours là pour toi, comme tu l’es pour moi.
+Je sais que je ne suis pas assez bien pour toi, mais je passerai le reste de ma vie à te le prouver.
+Je sais qu’on pourrait pas sortir ensemble maintenant ou même faire des choses ensemble,
+aussi que tu voudrais pas avoir de cadeau.`;
+
+let j=0;
+function writeText(){
+  if(j<message.length){
+    text.innerHTML+=message[j++];
+    setTimeout(writeText,35);
+  }
+}
+
+/* TIMER 60s */
+let time=60;
+function startTimer(){
+  const t=setInterval(()=>{
+    timer.innerText="⏳ "+(--time);
+    if(time<=0){
+      clearInterval(t);
+      letter.style.display="none";
+      confetti();
+      question.style.display="block";
+    }
+  },1000);
+}
+
+/* CONFETTI */
+function confetti(){
+  for(let k=0;k<40;k++){
+    const c=document.createElement("div");
+    c.className="confetti";
+    c.innerText="🎉";
+    c.style.left=Math.random()*100+"vw";
+    c.style.top="50vh";
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(),1000);
+  }
+}
+
+/* NON */
+let n=0;
+no.onclick=()=>{
+  n++;
+  no.innerText="S'il te plaît";
+  for(let i=0;i<8;i++){
+    const cry=document.createElement("div");
+    cry.className="cry";
+    cry.innerText="😭";
+    cry.style.left=Math.random()*100+"vw";
+    document.body.appendChild(cry);
+    setTimeout(()=>cry.remove(),1500);
+  }
+  if(n>=6){
+    no.style.display="none";
+    yes.classList.add("bigYes");
+  }
+};
+
+/* OUI */
+yes.onclick=()=>{
+  document.body.innerHTML=`
+  <h1>🐱💃</h1>
+  <img src="https://media.giphy.com/media/JIX9t2j0ZTN9S/giphy.gif" style="width:70%">
+  <h2>Merci princessa 💖</h2>`;
+};
+</script>
+
+</body>
+</html>
